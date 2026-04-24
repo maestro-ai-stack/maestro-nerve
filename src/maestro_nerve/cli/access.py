@@ -49,14 +49,16 @@ def access(
     ),
 ) -> None:
     """Print MCP connection config for one client + workspace pair."""
-    state = load_auth()
-    if not state:
-        raise typer.BadParameter("Not logged in. Run `mnerve login` first.")
-
+    # Validate arguments before consulting auth so users get clear errors
+    # even when not logged in.
     if client.strip().lower() not in _KNOWN_CLIENTS:
         raise typer.BadParameter(f"client must be one of: {', '.join(_KNOWN_CLIENTS)}")
     if fmt.strip().lower() not in _KNOWN_FORMATS:
         raise typer.BadParameter(f"format must be one of: {', '.join(_KNOWN_FORMATS)}")
+
+    state = load_auth()
+    if not state:
+        raise typer.BadParameter("Not logged in. Run `mnerve login` first.")
 
     resolved_workspace = workspace or state.workspace
 
