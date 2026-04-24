@@ -1,0 +1,18 @@
+{
+  "name": "maestro-nerve",
+  "version": "0.1.0",
+  "description": "Shared intelligence memory plane for AI agents — workspace-scoped, evidence-grounded memory exposed over remote MCP.",
+  "author": "Maestro AI",
+  "homepage": "https://github.com/maestro-ai-stack/maestro-nerve",
+  "license": "MIT",
+  "type": "cli",
+  "cli": {
+    "package": "maestro-nerve",
+    "entrypoint": "mnerve"
+  },
+  "mcp": {
+    "transport": "http",
+    "url_template": "https://nerve-api.maestro.onl/api/mcp?workspace=${MAESTRO_WORKSPACE}",
+    "bearer_env_var": "MAESTRO_API_KEY"
+  }
+}
