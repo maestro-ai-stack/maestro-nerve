@@ -137,3 +137,15 @@ def test_cli_approve_is_auth_free():
     # Must not include an Authorization header (auth_required=False).
     req = route.calls.last.request
     assert "authorization" not in {k.lower() for k in req.headers.keys()}
+
+
+@respx.mock
+def test_cli_exchange_is_auth_free():
+    route = respx.post(f"{DEFAULT_API_BASE_URL}/api/auth/cli/exchange").mock(
+        return_value=httpx.Response(200, json={"api_key": "mnr_live_abc"})
+    )
+    with NerveClient(api_key=None) as client:
+        out = client.cli_exchange(code="code", code_verifier="verifier")
+    assert out["api_key"] == "mnr_live_abc"
+    req = route.calls.last.request
+    assert "authorization" not in {k.lower() for k in req.headers.keys()}

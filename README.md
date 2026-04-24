@@ -1,122 +1,179 @@
 <p align="center"><img src=".github/maestro-logo.png" alt="Maestro" width="120" /></p>
 <h1 align="center">maestro-nerve</h1>
-<p align="center"><b>Shared intelligence memory plane for AI agents.</b></p>
-<p align="center"><i>One workspace-scoped, evidence-grounded memory. Reachable from Claude Code, Claude Desktop, Codex, ChatGPT, or your own MCP client.</i></p>
+<p align="center"><b>Shared, evidence-grounded memory for AI agents.</b></p>
+<p align="center"><i>One workspace memory plane for Claude Code, Codex, ChatGPT, Claude Desktop, and custom MCP clients.</i></p>
 
 <p align="center">
   <a href="https://pypi.org/project/maestro-nerve/"><img src="https://img.shields.io/pypi/v/maestro-nerve.svg" alt="PyPI version" /></a>
   <a href="https://pypi.org/project/maestro-nerve/"><img src="https://img.shields.io/pypi/pyversions/maestro-nerve.svg" alt="Python versions" /></a>
   <a href="https://github.com/maestro-ai-stack/maestro-nerve/actions/workflows/ci.yml"><img src="https://github.com/maestro-ai-stack/maestro-nerve/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License: MIT" /></a>
-  <a href="https://github.com/maestro-ai-stack"><img src="https://img.shields.io/badge/maestro--ai--stack-skills-6e56cf" alt="Maestro AI Stack" /></a>
 </p>
 
----
+`maestro-nerve` is the public client distribution for Maestro Nerve. It ships:
 
-`maestro-nerve` is a persistent, workspace-scoped memory substrate for AI agents. Instead of letting every agent (Claude Code / Claude Desktop / Codex / ChatGPT / ...) keep its own private memory silo, Nerve gives all of them **one shared, evidence-grounded memory plane** reachable over MCP.
+- `mnerve`, a production CLI for login, workspace inspection, and MCP config generation.
+- Claude Code and Codex plugin manifests.
+- A portable agent skill that explains the hosted MCP tool contract.
+- A thin HTTP client against `https://nerve-api.maestro.onl`.
 
-The seven V1 tools are workspace-bound, read-first, and grounded in source evidence:
+The backend is hosted by Maestro and remains closed source. This repository does not contain retrieval, ranking, extraction, normalization, storage schema, or reconciliation logic.
 
-| Tool | What it does |
-|------|-------------|
-| `search_workspace` | Ranked semantic search across entities, claims, and evidence. |
-| `list_entities` | Paginated entity browser. |
-| `inspect` | Aliases + claims + evidence for one entity. |
-| `profile` | Narrative briefing synthesized from grounded memory. |
-| `ground` | Evidence records for one claim. |
-| `discover` | Time-axis feed of what changed. |
-| `act.draft` | Draft an action (email, reply, task) from workspace memory — never executes. |
+## Quick Start
 
-Plus `server_info` — a free health probe.
-
-## Install (pick one)
-
-You need a Maestro API key first — mint one at <https://nerve.maestro.onl/access>.
-
-### Option A — `pip` + remote MCP (recommended)
+Use `uv` or `pipx` for the CLI. They install Python command-line applications in isolated tool environments and avoid modifying a project virtualenv.
 
 ```bash
-pip install maestro-nerve
-mnerve login                                # paste your API key
+uv tool install maestro-nerve
+mnerve login
 mnerve access --client claude-code --format mcp-json
-# Copy the printed JSON into Claude Code MCP settings. Done.
 ```
 
-Supported clients today: `claude-code`, `codex`, `chatgpt`.
-Formats: `envelope` (default, scripting-friendly), `mcp-json`, `settings-json`, `env`.
+Other good install paths:
 
-### Option B — Claude Code plugin
+```bash
+# Run once without a persistent install.
+uvx maestro-nerve login
 
+# Persistent CLI install with pipx.
+pipx install maestro-nerve
+
+# Fallback when your environment already manages Python packages.
+python -m pip install --user maestro-nerve
 ```
+
+`mnerve login` opens the hosted Maestro login page and completes through a local loopback callback on `127.0.0.1`. It does not use `localhost:3000` in production. For SSH or browser-restricted sessions:
+
+```bash
+mnerve login --no-browser
+mnerve login --manual
+```
+
+Development builds can explicitly target a local web app:
+
+```bash
+mnerve login --app-url http://localhost:3000
+```
+
+## Agent Setup
+
+Install the CLI once, then ask the backend for the exact MCP config shape your host expects:
+
+```bash
+mnerve access --client claude-code --format mcp-json
+mnerve access --client codex --format mcp-json
+mnerve access --client chatgpt --format envelope
+```
+
+Supported formats:
+
+| Format | Use |
+|---|---|
+| `envelope` | Script-friendly response with client, transport, workspace, endpoint, config, and note. |
+| `mcp-json` | Pasteable MCP server JSON. |
+| `settings-json` | JSON shaped for settings files that merge under `mcpServers`. |
+| `env` | `KEY=value` lines for shell launchers and automation. |
+
+Human hints are written to stderr. Stdout remains parseable.
+
+## Claude Code Plugin
+
+```text
 /plugin marketplace add maestro-ai-stack/maestro-nerve
 /plugin install maestro-nerve@maestro-nerve
 /reload-plugins
 ```
 
-Plugin brings the skill (agent guidance) and the CLI install hint. You still need `pip install maestro-nerve && mnerve login` for the CLI.
+The plugin brings the skill and metadata. The hosted MCP connection still needs CLI auth:
 
-### Option C — Codex plugin
+```bash
+uv tool install maestro-nerve
+mnerve login
+mnerve access --client claude-code --format mcp-json
+```
+
+## Codex Plugin
 
 ```bash
 codex plugin add maestro-ai-stack/maestro-nerve
+uv tool install maestro-nerve
+mnerve login
+mnerve access --client codex --format mcp-json
 ```
 
-Then `pip install maestro-nerve && mnerve login && mnerve access --client codex`.
+If your agent/plugin tooling is installed with npm, pnpm, or Bun, keep using that tool for the host. `mnerve` itself is distributed as a Python CLI on PyPI, so `uv` or `pipx` is the cleaner install path for the command.
 
-### Option D — Skill only (no CLI)
+## Skill Only
+
+Use this when the host already has an MCP connection and only needs agent instructions:
 
 ```bash
 npx skills add maestro-ai-stack/maestro-nerve -y -g
 ```
 
-Best for agents that only need the skill guidance and already have an API key in their environment.
+Equivalent package runners such as `pnpm dlx` or `bunx` are fine if your local skill manager supports them.
 
-## CLI surface
+## CLI Commands
 
 ```text
-mnerve login                              # paste / prompt for an API key
+mnerve login                              # browser login; stores local credentials
+mnerve login --manual                     # paste an API key
 mnerve logout                             # remove local credentials
-mnerve whoami                             # backend confirms identity + primary workspace
-mnerve workspace list                     # list workspaces reachable with this key
+mnerve whoami                             # print backend identity + primary workspace
+mnerve workspace list                     # list reachable workspaces
 mnerve status                             # one-line reachability probe
-mnerve access --client <c> --format <f>   # print MCP config for host c, shape f
+mnerve access --client <c> --format <f>   # print MCP config for a host
+mnerve serve-mcp                          # optional stdio MCP dev fallback
 mnerve version                            # installed package version
 ```
 
-`mnerve access --format` values:
+## Authentication
 
-| `--format` | Shape printed on stdout |
-|---|---|
-| `envelope` (default) | `{client, transport, workspace, endpoint, config, note}` — good for scripts |
-| `mcp-json` | Bare `{mcpServers: {...}}` — paste into Claude Desktop / Claude Code |
-| `settings-json` | Same as `mcp-json`; merge under `mcpServers` in your `settings.json` |
-| `env` | `KEY=value` lines; source into the shell that launches the host |
+- Browser login uses a loopback callback on `http://127.0.0.1:<ephemeral-port>/callback` plus PKCE.
+- Credentials are stored in the platform user config directory, for example `~/Library/Application Support/maestro/auth.json` on macOS or `~/.config/maestro/auth.json` on Linux.
+- The auth file is written with mode `0600` where the OS allows it.
+- Override the auth path with `MAESTRO_AUTH_FILE=/path/to/auth.json`.
+- Override the hosted API with `NERVE_API_BASE_URL=...`.
+- Override the web login app with `NERVE_APP_URL=...` or `mnerve login --app-url ...`.
+- `mnerve logout` removes only the local file. Revoke server-side keys from the Maestro web app.
 
-Hints are printed to stderr so stdout stays parseable.
+## MCP Surface
 
-## Authentication model
+Hosted MCP endpoint:
 
-- API key lives at `~/.config/maestro/auth.json` (platform-appropriate), mode `0600`.
-- Override path with `MAESTRO_AUTH_FILE=/path/to/auth.json`.
-- The key is a bearer token for `https://nerve-api.maestro.onl/api/*`. Workspace isolation is enforced server-side; the key cannot reach workspaces it does not own.
-- `mnerve logout` removes the local file but does **not** revoke the key server-side. Revoke at <https://nerve.maestro.onl/access>.
-
-## Remote MCP endpoint
-
-```
-POST https://nerve-api.maestro.onl/api/mcp?workspace=<your-slug>
-Authorization: Bearer <your api key>
+```http
+POST https://nerve-api.maestro.onl/api/mcp?workspace=<workspace-slug>
+Authorization: Bearer <maestro-api-key>
 Content-Type: application/json
 ```
 
-Every hosted MCP request is workspace-scoped at the transport. You cannot leak between workspaces with one key.
+Tools:
 
-## Development / internal backend
+| Tool | Purpose |
+|---|---|
+| `server_info` | Connectivity, workspace binding, server version, tool names. |
+| `search_workspace` | Ranked search across entities, claims, and evidence. |
+| `list_entities` | Browse or paginate workspace entities. |
+| `inspect` | Aliases, claims, and evidence for one entity. |
+| `profile` | Narrative briefing synthesized from grounded memory. |
+| `ground` | Evidence records for a claim. |
+| `discover` | Time-axis feed of recent workspace changes. |
+| `act.draft` | Draft an action from memory; never executes externally. |
 
-The backend (pipeline, extraction, Brain UI) is closed source and lives in a private sibling repo. This public repo is the client-only distribution surface. Issues, feature requests, plugin changes: file here. Backend-specific concerns: file here too — we triage and route internally.
+## Development
+
+```bash
+uv sync --extra dev
+uv run pytest
+uv run ruff check .
+```
+
+Release notes:
+
+- Version lives in `pyproject.toml`.
+- Update `CHANGELOG.md` in the release PR.
+- Push `v<x.y.z>` to trigger PyPI publishing through GitHub trusted publishing.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
-
-Built by [Maestro](https://maestro.onl) — Singapore AI product studio.
+MIT. Built by [Maestro](https://maestro.onl).

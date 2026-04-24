@@ -1,15 +1,17 @@
 {
   "name": "maestro-nerve",
   "version": "0.1.0",
-  "description": "Shared intelligence memory plane for AI agents — workspace-scoped, evidence-grounded memory exposed over remote MCP.",
+  "description": "Production MCP memory layer for AI agents: workspace-scoped search, entity inspection, claim grounding, change discovery, and grounded drafting through Maestro Nerve.",
   "author": "Maestro AI",
   "homepage": "https://github.com/maestro-ai-stack/maestro-nerve",
   "license": "MIT",
-  "type": "skill+cli",
+  "type": "skill+cli+mcp",
   "skills": "./skills/",
   "cli": {
     "package": "maestro-nerve",
-    "entrypoint": "mnerve"
+    "entrypoint": "mnerve",
+    "install": "uv tool install maestro-nerve",
+    "login": "mnerve login"
   },
   "mcp": {
     "transport": "http",

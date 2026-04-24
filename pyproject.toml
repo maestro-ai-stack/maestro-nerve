@@ -72,6 +72,7 @@ packages = ["src/maestro_nerve"]
 include = [
     "src/maestro_nerve",
     "skills/maestro-nerve",
+    "docs",
     ".claude-plugin",
     ".codex-plugin",
     "README.md",

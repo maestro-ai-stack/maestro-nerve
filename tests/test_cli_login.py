@@ -7,6 +7,7 @@ import respx
 from typer.testing import CliRunner
 
 from maestro_nerve.cli import app
+from maestro_nerve.cli.login import DEFAULT_APP_URL, _build_login_url
 from maestro_nerve.client import DEFAULT_API_BASE_URL, load_auth
 
 runner = CliRunner()
@@ -70,8 +71,21 @@ def test_login_with_explicit_workspace(tmp_auth):
 
 def test_login_requires_key(tmp_auth):
     # No --api-key and empty stdin prompt — should fail.
-    result = runner.invoke(app, ["login"], input="\n")
+    result = runner.invoke(app, ["login", "--manual"], input="\n")
     assert result.exit_code != 0
+
+
+def test_login_url_defaults_to_production_not_localhost():
+    url = _build_login_url(
+        app_url=DEFAULT_APP_URL,
+        state="state",
+        code_challenge="challenge",
+        callback_url="http://127.0.0.1:54321/callback",
+    )
+    assert url.startswith("https://nerve.maestro.onl/access/cli?")
+    assert "localhost:3000" not in url
+    assert "code_challenge=challenge" in url
+    assert "callback_url=http%3A%2F%2F127.0.0.1%3A54321%2Fcallback" in url
 
 
 def test_logout_removes_credentials(logged_in):

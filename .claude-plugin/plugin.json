@@ -2,12 +2,23 @@
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "maestro-nerve",
   "version": "0.1.0",
-  "description": "Shared intelligence memory plane for AI agents — workspace-scoped, evidence-grounded memory exposed over remote MCP.",
+  "description": "Production MCP memory layer for Claude Code: workspace-scoped search, entity inspection, claim grounding, change discovery, and grounded drafting through Maestro Nerve.",
   "author": {
     "name": "Maestro AI",
     "url": "https://maestro.onl"
   },
   "homepage": "https://github.com/maestro-ai-stack/maestro-nerve",
   "license": "MIT",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "mcp": {
+    "transport": "http",
+    "url_template": "https://nerve-api.maestro.onl/api/mcp?workspace=${MAESTRO_WORKSPACE}",
+    "bearer_env_var": "MAESTRO_API_KEY"
+  },
+  "cli": {
+    "package": "maestro-nerve",
+    "entrypoint": "mnerve",
+    "install": "uv tool install maestro-nerve",
+    "login": "mnerve login"
+  }
 }
