@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+build/
+dist/
+*.egg
+
+# Venv
+.venv/
+venv/
+env/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Local
+.env
+.env.local
+.env.*.local
+*.log
+
+# Packaging artefacts
+*.whl
+*.tar.gz
+
+# Optional auth config (user-local, should not be committed)
+.maestro/

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "maestro-nerve",
+  "version": "0.1.0",
+  "description": "Shared intelligence memory plane for AI agents — workspace-scoped, evidence-grounded memory exposed over remote MCP.",
+  "author": {
+    "name": "Maestro AI",
+    "url": "https://maestro.onl"
+  },
+  "homepage": "https://github.com/maestro-ai-stack/maestro-nerve",
+  "license": "MIT",
+  "skills": "./skills/"
+}

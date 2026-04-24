@@ -1,0 +1,29 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "maestro-nerve",
+  "plugins": [
+    {
+      "name": "maestro-nerve",
+      "source": "./",
+      "category": "memory",
+      "description": "Shared intelligence memory plane for AI agents — 7-tool MCP surface (search / list / inspect / profile / ground / discover / act.draft) plus server_info. Workspace-scoped, evidence-grounded, read-first. Replaces per-agent internal memory with one auditable substrate across Claude Code, Claude Desktop, Codex, and ChatGPT.",
+      "keywords": [
+        "nerve",
+        "mnerve",
+        "memory",
+        "knowledge",
+        "mcp",
+        "agent-memory",
+        "workspace-memory",
+        "shared-memory",
+        "evidence",
+        "procurement",
+        "tender",
+        "compliance",
+        "知识层",
+        "共享记忆",
+        "工作空间记忆"
+      ]
+    }
+  ]
+}
