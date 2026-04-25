@@ -44,6 +44,23 @@ def test_codex_plugin_manifest_minimum_fields():
     assert "${MAESTRO_WORKSPACE}" in manifest["mcp"]["url_template"]
 
 
+def test_codex_marketplace_plugin_manifest_minimum_fields():
+    manifest = _read_json(REPO_ROOT / "plugins/maestro-nerve/.codex-plugin/plugin.json")
+    for key in ("name", "version", "description", "cli", "mcp"):
+        assert key in manifest, f"missing {key}"
+    assert manifest["cli"]["entrypoint"] == "mnerve"
+    assert manifest["cli"]["install"] == "uv tool install maestro-nerve"
+    assert manifest["mcp"]["transport"] == "http"
+
+
+def test_codex_marketplace_index_points_to_plugin():
+    marketplace = _read_json(REPO_ROOT / ".agents/plugins/marketplace.json")
+    names = [p.get("name") for p in marketplace.get("plugins", [])]
+    assert "maestro-nerve" in names
+    plugin = next(p for p in marketplace["plugins"] if p["name"] == "maestro-nerve")
+    assert plugin["source"]["path"] == "./plugins/maestro-nerve"
+
+
 def test_skill_md_has_frontmatter():
     skill_path = REPO_ROOT / "skills/maestro-nerve/SKILL.md"
     text = skill_path.read_text(encoding="utf-8")
@@ -76,6 +93,7 @@ def test_manifest_versions_agree_with_pyproject():
 
     manifest = _read_json(REPO_ROOT / ".claude-plugin/plugin.json")
     codex = _read_json(REPO_ROOT / ".codex-plugin/plugin.json")
+    codex_marketplace = _read_json(REPO_ROOT / "plugins/maestro-nerve/.codex-plugin/plugin.json")
     pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     py_version = pyproject["project"]["version"]
     assert manifest["version"] == py_version, (
@@ -83,4 +101,7 @@ def test_manifest_versions_agree_with_pyproject():
     )
     assert codex["version"] == py_version, (
         f".codex-plugin version {codex['version']} != pyproject version {py_version}"
+    )
+    assert codex_marketplace["version"] == py_version, (
+        f"plugins/maestro-nerve version {codex_marketplace['version']} != pyproject version {py_version}"
     )

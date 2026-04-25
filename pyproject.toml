@@ -75,6 +75,8 @@ include = [
     "docs",
     ".claude-plugin",
     ".codex-plugin",
+    ".agents",
+    "plugins",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
