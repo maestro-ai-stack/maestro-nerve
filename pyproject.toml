@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "maestro-nerve"
-version = "0.1.0"
+version = "0.1.1"
 description = "Shared intelligence memory plane for AI agents — remote MCP + CLI + Claude Code / Codex plugins."
 readme = "README.md"
 license = { text = "MIT" }

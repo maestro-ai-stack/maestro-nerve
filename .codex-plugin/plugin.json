@@ -1,6 +1,6 @@
 {
   "name": "maestro-nerve",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Production MCP memory layer for AI agents: workspace-scoped search, entity inspection, claim grounding, change discovery, and grounded drafting through Maestro Nerve.",
   "author": "Maestro AI",
   "homepage": "https://github.com/maestro-ai-stack/maestro-nerve",
