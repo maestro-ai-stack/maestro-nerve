@@ -1,0 +1,19 @@
+{
+  "name": "maestro-ai-stack",
+  "interface": {
+    "displayName": "Maestro AI Stack"
+  },
+  "plugins": [
+    {
+      "name": "maestro-nerve",
+      "source": {
+        "source": "local",
+        "path": "./plugins/maestro-nerve"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Memory"
+    }
+  ]
+}
